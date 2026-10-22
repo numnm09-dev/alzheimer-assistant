@@ -386,41 +386,28 @@ function checkReminders() {
     });
 }
 function speak(message) {
-    if (!("speechSynthesis" in window)) {
-        return;
-    }
+    if (!("speechSynthesis" in window)) return;
 
     const synth = window.speechSynthesis;
     synth.cancel();
 
-    function playVoice() {
-        const utterance = new SpeechSynthesisUtterance(message);
-        utterance.lang = "ar-EG";
-        utterance.rate = 0.9;
-        utterance.pitch = 1;
+    const utterance = new SpeechSynthesisUtterance(message);
+    utterance.lang = "ar-EG";
+    utterance.rate = 1;
+    utterance.pitch = 1;
 
-        const voices = synth.getVoices();
-        const arabicVoice = voices.find(
-            voice => voice.lang.toLowerCase().startsWith("ar")
-        );
+    let voices = synth.getVoices();
 
-        if (arabicVoice) {
-            utterance.voice = arabicVoice;
-        }
+    const arabicVoice = voices.find(voice =>
+        voice.lang && voice.lang.toLowerCase().startsWith("ar")
+    );
 
-        synth.speak(utterance);
+    if (arabicVoice) {
+        utterance.voice = arabicVoice;
     }
 
-    if (synth.getVoices().length > 0) {
-        playVoice();
-    } else {
-        synth.addEventListener("voiceschanged", function onVoicesChanged() {
-            synth.removeEventListener("voiceschanged", onVoicesChanged);
-            playVoice();
-        }, { once: true });
-    }
+    synth.speak(utterance);
 }
-
 function startVoice() {
     const SpeechRecognition =
         window.SpeechRecognition ||
