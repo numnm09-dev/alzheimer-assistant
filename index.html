@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>المساعد الذكي لمرضى الزهايمر</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Tahoma, Arial, sans-serif;
+    background: #f0f7f8;
+    color: #243746;
+    line-height: 1.8;
+}
+
+header {
+    background: linear-gradient(135deg, #087f8c, #25a18e);
+    color: white;
+    text-align: center;
+    padding: 30px 15px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 28px;
+}
+
+header p {
+    margin-bottom: 0;
+}
+
+.container {
+    width: 92%;
+    max-width: 850px;
+    margin: 22px auto;
+}
+
+.card {
+    background: white;
+    padding: 22px;
+    margin-bottom: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 14px #0000000d;
+}
+
+h2 {
+    color: #087f8c;
+    margin-top: 0;
+}
+
+label {
+    display: block;
+    margin-top: 12px;
+    font-weight: bold;
+}
+
+input, select, button {
+    font-family: inherit;
+    font-size: 16px;
+}
+
+input, select {
+    width: 100%;
+    padding: 12px;
+    margin-top: 5px;
+    border: 1px solid #cbd8dd;
+    border-radius: 9px;
+    background: white;
+}
+
+button {
+    border: none;
+    border-radius: 9px;
+    padding: 12px 18px;
+    margin-top: 12px;
+    cursor: pointer;
+    background: #087f8c;
+    color: white;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+.secondary {
+    background: #526777;
+}
+
+.delete {
+    background: #c0392b;
+    margin-right: 8px;
+}
+
+.reminder {
+    border: 1px solid #d9e7e9;
+    border-right: 5px solid #25a18e;
+    border-radius: 10px;
+    padding: 14px;
+    margin-top: 12px;
+    overflow-wrap: anywhere;
+}
+
+.reminder strong {
+    color: #087f8c;
+}
+
+.voice-box {
+    background: #edf8f6;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    color: #526777;
+}
+
+.small {
+    font-size: 14px;
+    color: #526777;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🧠 المساعد الذكي</h1>
+    <p>مساعد يومي لدعم مرضى الزهايمر وتذكيرهم بالمهام والأدوية</p>
+</header>
+
+<main class="container">
+
+    <section class="card">
+        <h2>👋 أهلاً بيك</h2>
+        <p>
+            التطبيق بيساعدك تفتكر مواعيدك اليومية، وأوقات الدواء،
+            والمهام المهمة. تقدر تضيف تذكير بالكتابة أو بالصوت.
+        </p>
+    </section>
+
+    <section class="card">
+        <h2>➕ إضافة تذكير جديد</h2>
+
+        <label for="task">هتفتكر إيه؟</label>
+        <input id="task" type="text"
+               placeholder="مثال: تناول الدواء">
+
+        <label for="category">نوع التذكير</label>
+        <select id="category">
+            <option value="دواء">💊 دواء</option>
+            <option value="وجبة">🍲 وجبة أو مشروب</option>
+            <option value="موعد">📅 موعد</option>
+            <option value="مهمة">📝 مهمة يومية</option>
+            <option value="أخرى">⭐ أخرى</option>
+        </select>
+
+        <label for="reminderTime">ميعاد التذكير</label>
+        <input id="reminderTime" type="datetime-local">
+
+        <button onclick="addReminder()">حفظ التذكير</button>
+    </section>
+
+    <section class="card">
+        <h2>🎙️ إضافة تذكير بالصوت</h2>
+
+        <div class="voice-box">
+            <p>
+                اضغط على زر الميكروفون واتكلم، مثلاً:
+                «فكرني أشرب اللبن الساعة 9».
+            </p>
+
+            <button onclick="startVoice()">🎙️ اتكلم دلوقتي</button>
+
+            <p id="voiceStatus" aria-live="polite">
+                مستنيين صوتك...
+            </p>
+
+            <p class="small">
+                ميزة الصوت بتعتمد على دعم المتصفح والميكروفون.
+                راجع الكلام والميعاد قبل الحفظ.
+            </p>
+        </div>
+    </section>
+
+    <section class="card">
+        <h2>📋 تذكيراتي</h2>
+        <div id="remindersList">
+            <p>لسه مفيش تذكيرات. أضف أول تذكير ليك.</p>
+        </div>
+    </section>
+
+    <section class="card">
+        <h2>🧩 معلومات مفيدة عن الزهايمر</h2>
+
+        <h3>يعني إيه الزهايمر؟</h3>
+        <p>
+            الزهايمر مرض بيأثر على الذاكرة والتفكير مع مرور الوقت.
+            الشخص المصاب ممكن ينسى مواعيد أو أسماء أو بعض الأنشطة اليومية.
+        </p>
+
+        <h3>إزاي نساعد الشخص المصاب؟</h3>
+        <ul>
+            <li>نحافظ على روتين يومي واضح وثابت.</li>
+            <li>نستخدم تذكيرات بسيطة وكلام هادي.</li>
+            <li>نخلي الأدوية ومواعيدها تحت متابعة مقدم الرعاية.</li>
+            <li>نحافظ على بيئة آمنة ونبعد الحاجات الخطرة.</li>
+            <li>نتابع مع الطبيب المختص بانتظام.</li>
+        </ul>
+
+        <p class="small">
+            التطبيق وسيلة مساعدة فقط، ومش بديل عن الطبيب أو مقدم الرعاية.
+        </p>
+    </section>
+
+</main>
+
+<footer>
+    <p>المساعد الذكي لمرضى الزهايمر</p>
+    <p>مشروع طلابي - المعهد العالي للإدارة بالمحلة الكبرى</p>
+    <p class="small">
+        إشراف: الدكتور حازم البكري - الدكتور عبدالرحيم عبدالخالق -
+        الدكتورة إسراء هميسة
+    </p>
+   <p>إعداد طلبة المستوى الرابع – نظم ومعلومات:</p>
+
+<p>(1) عبد الله محمد أحمد</p>
+<p>(2)ندى عصام محمد محمود </p>
+<p>(3) إسراء السعيد أحمد العشري</p>
+<p>(4) محمد حمادة محمد عبد الفتاح</p>
+<p>(5) حبيبة محمد أحمد علي</p>
+<p>(6) فاطمة عمرو رجب محمد</p>
+<p>(7) نورهان محمد رفعت صلاح</p>
+<p>(8) كريم سند شبل قحيف</p>
+<p>(9) إسراء سامح فتحي نمر</p>
+<p>(10) عبد الرحمن السيد غريب السيد</p>
+</footer>
+
+<script>
+let reminders = [];
+
+try {
+    reminders = JSON.parse(
+        localStorage.getItem("alzheimerReminders") || "[]"
+    );
+} catch (error) {
+    reminders = [];
+}
+
+const alertedReminders = new Set();
+
+function saveReminders() {
+    localStorage.setItem(
+        "alzheimerReminders",
+        JSON.stringify(reminders)
+    );
+}
+
+function addReminder() {
+    const taskInput = document.getElementById("task");
+    const categoryInput = document.getElementById("category");
+    const timeInput = document.getElementById("reminderTime");
+
+    const task = taskInput.value.trim();
+    const category = categoryInput.value;
+    const time = timeInput.value;
+
+    if (!task || !time) {
+        alert("من فضلك اكتب التذكير وحدد الميعاد.");
+        return;
+    }
+
+    if (new Date(time).getTime() <= Date.now()) {
+        alert("اختار ميعاد في المستقبل.");
+        return;
+    }
+
+    reminders.push({
+        id: Date.now().toString(),
+        task: task,
+        category: category,
+        time: time
+    });
+
+    saveReminders();
+    renderReminders();
+
+    taskInput.value = "";
+    timeInput.value = "";
+
+    alert("تم حفظ التذكير بنجاح ❤️");
+
+    if ("Notification" in window &&
+        Notification.permission === "default") {
+        Notification.requestPermission();
+    }
+}
+
+function renderReminders() {
+    const list = document.getElementById("remindersList");
+    list.innerHTML = "";
+
+    if (reminders.length === 0) {
+        list.innerHTML = "<p>لسه مفيش تذكيرات. أضف أول تذكير ليك.</p>";
+        return;
+    }
+
+    reminders.sort((a, b) =>
+        new Date(a.time) - new Date(b.time)
+    );
+
+    reminders.forEach(function(item) {
+        const box = document.createElement("div");
+        box.className = "reminder";
+
+        const title = document.createElement("strong");
+        title.textContent = item.task;
+
+        const category = document.createElement("p");
+        category.textContent = "النوع: " + item.category;
+
+        const time = document.createElement("p");
+        time.textContent = "الميعاد: " +
+            new Date(item.time).toLocaleString("ar-EG");
+
+        const removeButton = document.createElement("button");
+        removeButton.className = "delete";
+        removeButton.textContent = "حذف التذكير";
+        removeButton.onclick = function() {
+            deleteReminder(item.id);
+        };
+
+        box.appendChild(title);
+        box.appendChild(category);
+        box.appendChild(time);
+        box.appendChild(removeButton);
+
+        list.appendChild(box);
+    });
+}
+
+function deleteReminder(id) {
+    if (!confirm("متأكد إنك عايز تحذف التذكير؟")) {
+        return;
+    }
+
+    reminders = reminders.filter(function(item) {
+        return item.id !== id;
+    });
+
+    alertedReminders.delete(id);
+    saveReminders();
+    renderReminders();
+}
+
+function checkReminders() {
+    const now = Date.now();
+
+    reminders.forEach(function(item) {
+        const reminderTime = new Date(item.time).getTime();
+
+        if (
+            reminderTime <= now &&
+            !alertedReminders.has(item.id)
+        ) {
+            alertedReminders.add(item.id);
+
+            alert("🔔 تذكير: " + item.task);
+
+            speak("تذكير. " + item.task);
+
+            if ("Notification" in window &&
+                Notification.permission === "granted") {
+                new Notification("تذكير من المساعد الذكي", {
+                    body: item.task
+                });
+            }
+        }
+    });
+}
+
+function speak(message) {
+    if (!("speechSynthesis" in window)) {
+        return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(message);
+    utterance.lang = "ar-EG";
+    utterance.rate = 0.85;
+
+    window.speechSynthesis.speak(utterance);
+}
+
+function startVoice() {
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+    const status = document.getElementById("voiceStatus");
+
+    if (!SpeechRecognition) {
+        status.textContent =
+            "المتصفح مش بيدعم التعرف على الصوت. جرّب Google Chrome.";
+        return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = "ar-EG";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    status.textContent = "🎙️ اتكلم دلوقتي...";
+
+    recognition.onresult = function(event) {
+        const spokenText =
+            event.results[0][0].transcript.trim();
+
+        document.getElementById("task").value = spokenText;
+        status.textContent =
+            "سمعتك بتقول: " + spokenText +
+            " — اختار نوع التذكير والميعاد، وبعدها احفظ.";
+    };
+
+    recognition.onerror = function() {
+        status.textContent =
+            "حصلت مشكلة في الصوت. اتأكد من إذن الميكروفون.";
+    };
+
+    recognition.onend = function() {
+        if (status.textContent === "🎙️ اتكلم دلوقتي...") {
+            status.textContent = "انتهى التسجيل.";
+        }
+    };
+
+    recognition.start();
+}
+
+renderReminders();
+
+setInterval(checkReminders, 5000);
+</script>
+
+</body>
+</html>
