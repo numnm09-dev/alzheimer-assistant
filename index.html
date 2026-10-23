@@ -8,7 +8,20 @@
 <style>
 :root{--teal:#087f8c;--green:#25a18e;--ink:#203743;--muted:#6c8088;--bg:#f1f7f8;--line:#dce9eb;--white:#fff;--danger:#b9382d;--shadow:0 12px 35px #183e4810}
 *{box-sizing:border-box}
-body{margin:0;font-family:Tahoma,Arial,sans-serif;background-color:var(--bg);background-image:linear-gradient(rgba(241,247,248,.88),rgba(241,247,248,.92)),url("background.png");background-size:cover;background-position:center;background-attachment:fixed;background-repeat:no-repeat;color:var(--ink);line-height:1.8}
+body {
+  margin: 0;
+  font-family: Tahoma, Arial, sans-serif;
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(rgba(241,247,248,.88), rgba(241,247,248,.92)),
+    url("background.png");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  color: var(--ink);
+  line-height: 1.8;
+}
 button,input,select{font:inherit}
 button{cursor:pointer;border:0;border-radius:13px;padding:12px 17px;background:var(--teal);color:#fff;font-weight:700;transition:transform .15s,opacity .15s}
 button:hover{opacity:.92;transform:translateY(-1px)}
@@ -154,7 +167,14 @@ footer{text-align:center;padding:25px 12px;color:var(--muted);font-size:13px}foo
       <button class="nav-btn" data-page="guide"><span class="nav-icon">💚</span>الرعاية</button>
       <button class="nav-btn" data-page="family"><span class="nav-icon">👨‍👩‍👧</span>الأهل والمقرّبون</button>
     </nav>
-    <section class="page active" id="page-home">
+    <section class="page active" id="page-home"><div id="activeReminderAlert" class="card" hidden>
+  <h2>🔔 وقت التذكير!</h2>
+  <p id="activeReminderTask"></p>
+  <button type="button" onclick="stopReminderSound(); document.getElementById('activeReminderAlert').hidden = true;">
+    ✅ فهمت التذكير — إيقاف الرنّة
+  </button>
+</div>
+
       <div class="welcome-hero"><h2>أهلاً بيك 👋</h2><p>خلّي يومك أسهل. سجّل مواعيد الدواء والوجبات والمهام، وسيقوم التطبيق بتذكيرك بها بالصوت والرنة ما دام التطبيق مفتوحًا ويعمل.</p><div class="hero-actions"><button onclick="showPage('add')">＋ أضف تذكير جديد</button><button class="ghost" onclick="showPage('list')">عرض تذكيراتي ←</button></div></div>
       <div class="stats"><div class="stat"><span>كل التذكيرات</span><strong id="totalCount">0</strong></div><div class="stat"><span>تذكيرات اليوم</span><strong id="todayCount">0</strong></div><div class="stat"><span>المتكررة</span><strong id="repeatCount">0</strong></div></div>
       <section class="card"><h2>📌 أقرب التذكيرات</h2><div id="upcomingList"><div class="empty"><div>🌿</div>لسه مفيش تذكيرات. ابدأ بإضافة أول تذكير.</div></div></section>
@@ -237,6 +257,26 @@ footer{text-align:center;padding:25px 12px;color:var(--muted);font-size:13px}foo
 </section>
     <section class="page" id="page-guide">
       <section class="card"><h2>💚 دليل الرعاية</h2><div class="info-grid"><div class="info-tile"><b>🕰️ روتين ثابت</b>حافظ على مواعيد يومية واضحة قدر الإمكان.</div><div class="info-tile"><b>💊 متابعة الدواء</b>خلي مقدم الرعاية يتأكد من الجرعات والمواعيد.</div><div class="info-tile"><b>🗣️ كلام هادي</b>استخدم جمل قصيرة وواضحة، وادي الشخص وقتًا للرد.</div><div class="info-tile"><b>🏡 بيئة آمنة</b>قلل مصادر الخطر وسهّل الوصول للأشياء المهمة.</div></div><p>الزهايمر يؤثر على الذاكرة والتفكير مع الوقت، وقد يجعل تذكر المواعيد والأنشطة اليومية أصعب.</p><p class="small">التطبيق أداة مساعدة فقط، وليس بديلًا عن الطبيب أو مقدم الرعاية. لا تعتمد عليه وحده في تنبيهات الأدوية العاجلة.</p></section>
+      <section class="card">
+  <h2>🔔 اختيار رنّة التذكير</h2>
+  <p>اختار ملف صوت من جهازك علشان يشتغل بعد ما المساعد ينطق التذكير.</p>
+
+  <input
+    type="file"
+    id="ringtoneFile"
+    accept="audio/*"
+  >
+<button type="button" onclick="stopReminderSound()">
+  ✅ خلاص، فهمت التذكير — إيقاف الرنّة
+</button>
+  <p id="ringtoneStatus" class="small">
+    لم يتم اختيار رنّة حتى الآن.
+  </p>
+
+  <button type="button" onclick="previewRingtone()">
+  ▶️ تشغيل / إيقاف الرنّة
+</button>
+</section>
       <section class="card"><h2>🎓 بيانات المشروع</h2><p><b>المساعد الذكي لمرضى الزهايمر</b></p><p>مشروع طلابي - المعهد العالي للإدارة بالمحلة الكبرى</p><p>إشراف: الدكتور حازم البكري - الدكتور عبدالرحيم عبدالخالق - الدكتورة إسراء هميسة</p><p>إعداد طلبة المستوى الرابع – نظم ومعلومات:</p><ol><li>عبد الله محمد أحمد</li><li>ندى عصام محمد محمود</li><li>إسراء السعيد أحمد العشري</li><li>محمد حمادة محمد عبد الفتاح</li><li>حبيبة محمد أحمد علي</li><li>فاطمة عمرو رجب محمد</li><li>نورهان محمد رفعت صلاح</li><li>كريم سند شبل قحيف</li><li>إسراء سامح فتحي نمر</li><li>عبد الرحمن السيد غريب السيد</li></ol></section>
     </section>
   </main>
@@ -244,6 +284,7 @@ footer{text-align:center;padding:25px 12px;color:var(--muted);font-size:13px}foo
 <footer><p>المساعد الذكي لمرضى الزهايمر</p><p>مشروع طلابي • المعهد العالي للإدارة بالمحلة الكبرى</p></footer>
 <script>
 const STORAGE_KEY = "alzheimerReminders";
+const GEMINI_API_URL = "https://script.google.com/macros/s/AKfycbzkGRwhAGf45ynBlHIlKouC_FfZq6ZJOPpXDJSYm2jWH9b-KltXkmHVrL4g7rEpSKwpSQ/exec";
 // بيانات الأهل والمقرّبين
 const FAMILY_KEY = "alzheimerFamilyContacts";
 let familyContacts = [];
@@ -292,7 +333,196 @@ document.querySelectorAll(".nav-btn").forEach(button => button.addEventListener(
 document.getElementById("repeatMode").addEventListener("change", event => {
   document.getElementById("durationField").hidden = event.target.value !== "daily";
 });
-function setDefaultTimeIfEmpty() {
+function extractReminderDetails(text) {
+  const originalText = text.trim();
+  let task = originalText;
+  const now = new Date();
+
+  // تحويل الأرقام العربية والفارسية إلى أرقام إنجليزية
+  const normalized = originalText
+    .replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d))
+    .replace(/[۰-۹]/g, d => "۰۱۲۳۴۵۶۷۸۹".indexOf(d));
+
+  let date = new Date(now);
+  let hasDate = false;
+  let hasTime = false;
+
+  // أسماء أيام الأسبوع
+  const weekdays = {
+    "الأحد": 0, "الاحد": 0,
+    "الإثنين": 1, "الاثنين": 1, "اتنين": 1,
+    "الثلاثاء": 2, "التلات": 2,
+    "الأربعاء": 3, "الاربعاء": 3, "الأربع": 3,
+    "الخميس": 4,
+    "الجمعة": 5, "الجمعه": 5,
+    "السبت": 6
+  };
+
+  // 1- وقت نسبي: بعد 15 دقيقة، بعد ساعتين، بعد يوم
+  const relative = normalized.match(
+    /بعد\s+(\d+)\s*(دقيقة|دقايق|دقائق|دقيقه|ساعة|ساعه|ساعات|يوم|أيام|ايام)/i
+  );
+
+  if (relative) {
+    const amount = Number(relative[1]);
+    const unit = relative[2];
+
+    if (/دقيق/.test(unit)) {
+      date.setMinutes(date.getMinutes() + amount);
+    } else if (/ساع/.test(unit)) {
+      date.setHours(date.getHours() + amount);
+    } else {
+      date.setDate(date.getDate() + amount);
+    }
+
+    hasDate = true;
+    hasTime = true;
+    task = task.replace(relative[0], "");
+  } else if (/بعد\s*(بكرة|بكره|غدًا|غدا)/.test(normalized)) {
+    date.setDate(date.getDate() + 2);
+    hasDate = true;
+    task = task.replace(/بعد\s*(بكرة|بكره|غدًا|غدا)/, "");
+  } else if (/بكرة|بكره|غدًا|غدا/.test(normalized)) {
+    date.setDate(date.getDate() + 1);
+    hasDate = true;
+    task = task.replace(/بكرة|بكره|غدًا|غدا/g, "");
+  } else if (/بعد\s*شوية|كمان\s*شوية|شويه|حالًا|حالا/.test(normalized)) {
+    date.setMinutes(date.getMinutes() + 5);
+    hasDate = true;
+    hasTime = true;
+    task = task.replace(/بعد\s*شوية|كمان\s*شوية|شويه|حالًا|حالا/g, "");
+  } else if (/النهارده|النهاردة|اليوم/.test(normalized)) {
+    hasDate = true;
+    task = task.replace(/النهارده|النهاردة|اليوم/g, "");
+  }
+
+  // 2- تحديد يوم الشهر: يوم 14، يوم 12 الشهر الجاي
+  const dayMatch = normalized.match(
+    /يوم\s*(\d{1,2})(?:\s*(الجاي|القادم|المقبل))?/i
+  );
+
+  const nextMonth = /الشهر\s*(الجاي|القادم|المقبل)/.test(normalized);
+
+  if (dayMatch) {
+    const dayNumber = Number(dayMatch[1]);
+
+    if (dayNumber >= 1 && dayNumber <= 31) {
+      let year = now.getFullYear();
+      let month = now.getMonth() + (nextMonth ? 1 : 0);
+
+      // لو اليوم فات في الشهر الحالي، ننتقل للشهر القادم
+      if (!nextMonth && dayNumber <= now.getDate()) {
+        month++;
+      }
+
+      // ضبط الشهر والسنة لو عدينا ديسمبر
+      year += Math.floor(month / 12);
+      month = ((month % 12) + 12) % 12;
+
+      const candidate = new Date(year, month, dayNumber);
+
+      // التأكد إن اليوم موجود فعلًا في الشهر
+      if (candidate.getDate() === dayNumber) {
+        date.setFullYear(
+          candidate.getFullYear(),
+          candidate.getMonth(),
+          candidate.getDate()
+        );
+        hasDate = true;
+        task = task.replace(dayMatch[0], "");
+      }
+    }
+  }
+
+  // 3- يوم الأسبوع: الجمعة الجاية، يوم الأحد
+  const weekdayPattern =
+    /(?:يوم\s*)?(الأحد|الاحد|الإثنين|الاثنين|اتنين|الثلاثاء|التلات|الأربعاء|الاربعاء|الأربع|الخميس|الجمعة|الجمعه|السبت)(?:\s*(الجاي|القادم|المقبل))?/i;
+
+  const weekdayMatch = normalized.match(weekdayPattern);
+
+  if (weekdayMatch) {
+    const dayName = weekdayMatch[1];
+    const targetDay = weekdays[dayName];
+
+    if (targetDay !== undefined) {
+      let difference = (targetDay - now.getDay() + 7) % 7;
+
+      if (difference === 0 || weekdayMatch[2]) {
+        difference = difference === 0 ? 7 : difference;
+      }
+
+      date.setDate(now.getDate() + difference);
+      hasDate = true;
+      task = task.replace(weekdayMatch[0], "");
+    }
+  }
+
+  // 4- استخراج الساعة والدقائق
+  const timeMatch = normalized.match(
+    /(?:الساعة|الساعه|على الساعة|على الساعه)\s*(\d{1,2})(?:[:٫.](\d{1,2}))?\s*(الصبح|صباحا|صباحًا|بالليل|ليلًا|ليلا|مساء|مساءً|العصر|الظهر)?/i
+  );
+
+  if (timeMatch) {
+    let hour = Number(timeMatch[1]);
+    const minute = Number(timeMatch[2] || 0);
+    const period = timeMatch[3] || "";
+
+    if (hour <= 23 && minute <= 59) {
+      if (/بالليل|ليلًا|ليلا|مساء/.test(period)) {
+        if (hour < 12) hour += 12;
+      } else if (/الصبح|صباح/.test(period)) {
+        if (hour === 12) hour = 0;
+      } else if (/العصر/.test(period)) {
+        if (hour < 12) hour += 12;
+      } else if (/الظهر/.test(period)) {
+        if (hour < 12) hour = 12;
+      }
+
+      date.setHours(hour, minute, 0, 0);
+      hasTime = true;
+      task = task.replace(timeMatch[0], "");
+    }
+  }
+
+  // 5- الشهر القادم لوحده
+  if (nextMonth && !dayMatch) {
+    date.setMonth(date.getMonth() + 1);
+    hasDate = true;
+    task = task.replace(/الشهر\s*(الجاي|القادم|المقبل)/g, "");
+  }
+
+  // تنظيف اسم المهمة من كلمات التذكير والتاريخ
+  task = task
+    .replace(/فكرني|فكّرني|ذكرني|ذكّرني|افتكر|متنساش|ما تنساش/g, "")
+    .replace(/بعد\s*(بكرة|بكره|غدًا|غدا)/g, "")
+    .replace(/بكرة|بكره|غدًا|غدا/g, "")
+    .replace(/النهارده|النهاردة|اليوم/g, "")
+    .replace(/بعد\s*شوية|كمان\s*شوية|شويه|حالًا|حالا/g, "")
+    .replace(/بعد\s*\d+\s*(دقيقة|دقايق|دقائق|دقيقه|ساعة|ساعه|ساعات|يوم|أيام|ايام)/g, "")
+    .replace(/الشهر\s*(الجاي|القادم|المقبل)/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  // لو مفيش تاريخ ولا ساعة
+  if (!hasDate && !hasTime) {
+    return { task: task || originalText, time: null };
+  }
+
+  // لو فيه تاريخ فقط، اختار الساعة 9 صباحًا
+  if (!hasTime) {
+    date.setHours(9, 0, 0, 0);
+  }
+
+  // لو الساعة فاتت في نفس اليوم، نرفض الموعد بدل تسجيل وقت خاطئ
+  if (date <= now) {
+    return { task: task || originalText, time: null };
+  }
+
+  return {
+    task: task || originalText,
+    time: toLocalInput(date)
+  };
+}function setDefaultTimeIfEmpty() {
   const input = document.getElementById("reminderTime");
   if (input.value) return;
   const date = new Date(Date.now() + 60 * 60 * 1000);
@@ -423,9 +653,34 @@ function speak(message) {
   });
 }
 async function playReminderAlert(task) {
+  const alertBox = document.getElementById("activeReminderAlert");
+  const taskText = document.getElementById("activeReminderTask");
+
+  if (alertBox && taskText) {
+    taskText.textContent = task;
+    alertBox.hidden = false;
+  }
+
   await speak(task);
-  playPhoneLikeRingtone();
+
+  if (selectedRingtoneUrl) {
+    try {
+      if (window.selectedRingtoneAudio) {
+        window.selectedRingtoneAudio.pause();
+        window.selectedRingtoneAudio.currentTime = 0;
+      }
+
+      window.selectedRingtoneAudio = new Audio(selectedRingtoneUrl);
+      window.selectedRingtoneAudio.loop = true;
+      await window.selectedRingtoneAudio.play();
+    } catch (error) {
+      playPhoneLikeRingtone();
+    }
+  } else {
+    playPhoneLikeRingtone();
+  }
 }
+
 function playPhoneLikeRingtone() {
   try {
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
@@ -466,6 +721,74 @@ function stopRingtone() {
     setTimeout(() => { if (alarmAudioContext && alarmAudioContext.state === "running") alarmAudioContext.suspend(); }, 20000);
   }
 }
+function stopReminderSound() {
+  // إيقاف الرنّة المختارة
+  if (window.selectedRingtoneAudio) {
+    window.selectedRingtoneAudio.pause();
+    window.selectedRingtoneAudio.currentTime = 0;
+    window.selectedRingtoneAudio = null;
+  }
+
+  // إيقاف رنّة النظام الافتراضية
+  stopRingtone();
+
+  // إيقاف تجربة الرنّة لو كانت شغالة
+  if (previewAudio) {
+    previewAudio.pause();
+    previewAudio.currentTime = 0;
+    previewAudio = null;
+  }
+}
+// حفظ ملف الرنّة المختارة في المتصفح
+let selectedRingtoneUrl = null;
+
+const ringtoneInput = document.getElementById("ringtoneFile");
+const ringtoneStatus = document.getElementById("ringtoneStatus");
+
+if (ringtoneInput) {
+  ringtoneInput.addEventListener("change", function () {
+    const file = this.files && this.files[0];
+
+    if (!file) return;
+
+    if (selectedRingtoneUrl) {
+      URL.revokeObjectURL(selectedRingtoneUrl);
+    }
+
+    selectedRingtoneUrl = URL.createObjectURL(file);
+
+    if (ringtoneStatus) {
+      ringtoneStatus.textContent = "تم اختيار الرنّة: " + file.name;
+    }
+  });
+}
+let previewAudio = null;
+
+async function previewRingtone() {
+  // لو الرنّة شغالة، اضغط لإيقافها
+  if (previewAudio && !previewAudio.paused) {
+    previewAudio.pause();
+    previewAudio.currentTime = 0;
+    previewAudio = null;
+    return;
+  }
+
+  if (!selectedRingtoneUrl) {
+    alert("اختار ملف صوت الأول.");
+    return;
+  }
+
+  previewAudio = new Audio(selectedRingtoneUrl);
+  previewAudio.loop = true;
+
+  try {
+    await previewAudio.play();
+  } catch (error) {
+    previewAudio = null;
+    alert("مش قادر أشغّل الملف. جرّب ملف صوت تاني.");
+  }
+}
+
 function fallbackBeep() {
   try {
     const audio = new AudioContext();
@@ -512,11 +835,64 @@ function startVoice() {
   activeRecognition = recognition;
   recognition.lang = "ar-EG"; recognition.interimResults = false; recognition.maxAlternatives = 1;
   status.textContent = "🎙️ اتكلم دلوقتي...";
-  recognition.onresult = event => {
-    const spokenText = event.results[0][0].transcript.trim();
-    document.getElementById("task").value = spokenText;
-    status.textContent = "سمعتك بتقول: " + spokenText + " — راجع الكلام والميعاد من صفحة إضافة تذكير.";
-    showPage("add");
+ recognition.onresult = async event => {
+  const spokenText = event.results[0][0].transcript.trim();
+
+  status.textContent = "⏳ بفهم كلامك باستخدام الذكاء الاصطناعي...";
+
+  try {
+    const response = await fetch(GEMINI_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify({ text: spokenText })
+    });
+
+    const data = await response.json();
+
+    if (!data.success || !data.result) {
+      throw new Error("Gemini لم يستخرج البيانات المطلوبة");
+    }
+
+    const result = data.result;
+
+    document.getElementById("task").value =
+      result.task || spokenText;
+
+    if (result.date && result.time) {
+      document.getElementById("reminderTime").value =
+        result.date + "T" + result.time;
+
+      status.textContent =
+        "✅ فهمت المهمة والميعاد: " + (result.task || spokenText);
+    } else {
+      status.textContent =
+        "✅ فهمت المهمة، لكن محتاج تراجع الميعاد وتحدده لو مش ظاهر.";
+    }
+
+  } catch (error) {
+    console.error("Gemini error:", error);
+
+    const result = extractReminderDetails(spokenText);
+
+    document.getElementById("task").value = result.task;
+
+    if (result.time) {
+      document.getElementById("reminderTime").value = result.time;
+      status.textContent =
+        "⚠️ استخدمت الفهم المحلي بدل Gemini. المهمة: " + result.task;
+    } else {
+      status.textContent =
+        "سمعتك بتقول: " + spokenText +
+        " — راجع الميعاد وحدده يدويًا.";
+    }
+  }
+
+  showPage("add");
+};
+
+showPage("add");
   };
   recognition.onerror = () => { status.textContent = "حصلت مشكلة في الصوت. اتأكد من إذن الميكروفون وجرب تاني."; };
   recognition.onend = () => { if (status.textContent === "🎙️ اتكلم دلوقتي...") status.textContent = "انتهى التسجيل."; activeRecognition = null; };
