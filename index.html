@@ -897,7 +897,6 @@ showPage("add");
   recognition.onerror = () => { status.textContent = "حصلت مشكلة في الصوت. اتأكد من إذن الميكروفون وجرب تاني."; };
   recognition.onend = () => { if (status.textContent === "🎙️ اتكلم دلوقتي...") status.textContent = "انتهى التسجيل."; activeRecognition = null; };
   try { recognition.start(); } catch(error) { status.textContent = "تعذر بدء التسجيل. جرّب مرة أخرى."; }
-}
 // عرض الأشخاص المسجلين
 function renderFamily() {
   const list = document.getElementById("familyList");
