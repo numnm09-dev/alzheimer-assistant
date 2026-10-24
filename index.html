@@ -284,8 +284,7 @@ footer{text-align:center;padding:25px 12px;color:var(--muted);font-size:13px}foo
 <footer><p>المساعد الذكي لمرضى الزهايمر</p><p>مشروع طلابي • المعهد العالي للإدارة بالمحلة الكبرى</p></footer>
 <script>
 const STORAGE_KEY = "alzheimerReminders";
-const GEMINI_API_URL = "https://script.google.com/macros/s/AKfycbzkGRwhAGf45ynBlHIlKouC_FfZq6ZJOPpXDJSYm2jWH9b-KltXkmHVrL4g7rEpSKwpSQ/exec";
-// بيانات الأهل والمقرّبين
+const GEMINI_API_URL = "https://script.google.com/macros/s/AKfycbyBAsYJkwMXCuU8sXvw62zY5vAIvFaN00WEuhDrVA2F2ous1bkYLeqDi1UeoLifto9OgA/exec";// بيانات الأهل والمقرّبين
 const FAMILY_KEY = "alzheimerFamilyContacts";
 let familyContacts = [];
 
@@ -827,18 +826,42 @@ function checkReminders() {
   });
 }
 function startVoice() {
-  const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const Recognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
   const status = document.getElementById("voiceStatus");
-  if (!Recognition) { status.textContent = "المتصفح لا يدعم تحويل الكلام إلى نص. جرّب Google Chrome."; return; }
-  if (activeRecognition) { try { activeRecognition.stop(); } catch(error) {} }
+
+  if (!Recognition) {
+    status.textContent =
+      "المتصفح لا يدعم تحويل الكلام إلى نص. جرّب Google Chrome.";
+    return;
+  }
+
+  if (activeRecognition) {
+    try {
+      activeRecognition.stop();
+    } catch (error) {}
+  }
+
   const recognition = new Recognition();
   activeRecognition = recognition;
-  recognition.lang = "ar-EG"; recognition.interimResults = false; recognition.maxAlternatives = 1;
+
+  recognition.lang = "ar-EG";
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
   status.textContent = "🎙️ اتكلم دلوقتي...";
- recognition.onresult = async event => {
+recognition.onresult = async event => {
   const spokenText = event.results[0][0].transcript.trim();
 
-  status.textContent = "⏳ بفهم كلامك باستخدام الذكاء الاصطناعي...";
+  // عرض المهمة فورًا بدل انتظار رد Gemini
+  const taskField = document.getElementById("task");
+  const timeField = document.getElementById("reminderTime");
+
+  taskField.value = spokenText;
+  status.textContent = "⏳ تم التقاط كلامك، جاري تحديد الموعد...";
+
+  showPage("add");
 
   try {
     const response = await fetch(GEMINI_API_URL, {
@@ -849,56 +872,95 @@ function startVoice() {
       body: JSON.stringify({ text: spokenText })
     });
 
+    if (!response.ok) {
+      throw new Error("تعذر الاتصال بخدمة الذكاء الاصطناعي.");
+    }
+
     const data = await response.json();
 
     if (!data.success || !data.result) {
-      throw new Error("Gemini لم يستخرج البيانات المطلوبة");
+      throw new Error(data.error || "لم يتم استخراج بيانات التذكير.");
     }
 
     const result = data.result;
 
-    document.getElementById("task").value =
-      result.task || spokenText;
+    if (typeof result.task === "string" && result.task.trim()) {
+      taskField.value = result.task.trim();
+    }
 
     if (result.date && result.time) {
-      document.getElementById("reminderTime").value =
-        result.date + "T" + result.time;
+      const dateMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(result.date);
+      const timeMatch = /^(\d{2}):(\d{2})$/.exec(result.time);
 
-      status.textContent =
-        "✅ فهمت المهمة والميعاد: " + (result.task || spokenText);
+      if (!dateMatch || !timeMatch) {
+        throw new Error("صيغة التاريخ أو الوقت غير صحيحة.");
+      }
+
+      const year = Number(dateMatch[1]);
+      const month = Number(dateMatch[2]);
+      const day = Number(dateMatch[3]);
+      const hour = Number(timeMatch[1]);
+      const minute = Number(timeMatch[2]);
+
+      const chosenDate = new Date(
+        year, month - 1, day, hour, minute, 0, 0
+      );
+
+      if (
+        chosenDate.getFullYear() !== year ||
+        chosenDate.getMonth() !== month - 1 ||
+        chosenDate.getDate() !== day ||
+        hour > 23 ||
+        minute > 59
+      ) {
+        throw new Error("التاريخ أو الوقت الذي تم فهمه غير صالح.");
+      }
+
+      if (chosenDate.getTime() <= Date.now()) {
+        timeField.value = "";
+        status.textContent =
+          "⚠️ المهمة اتفهمت، لكن الموعد فات. راجع الموعد قبل الحفظ.";
+      } else {
+        const pad = n => String(n).padStart(2, "0");
+
+        timeField.value =
+          `${year}-${pad(month)}-${pad(day)}T${pad(hour)}:${pad(minute)}`;
+
+        status.textContent =
+          `✅ تم فهم المهمة والموعد: ${result.task} — ${chosenDate.toLocaleString("ar-EG")}`;
+      }
     } else {
+      timeField.value = "";
       status.textContent =
-        "✅ فهمت المهمة، لكن محتاج تراجع الميعاد وتحدده لو مش ظاهر.";
+        "⚠️ المهمة اتفهمت، لكن الموعد مش واضح. حدده يدويًا قبل الحفظ.";
     }
 
   } catch (error) {
     console.error("Gemini error:", error);
-
-    const result = extractReminderDetails(spokenText);
-
-    document.getElementById("task").value = result.task;
-
-    if (result.time) {
-      document.getElementById("reminderTime").value = result.time;
-      status.textContent =
-        "⚠️ استخدمت الفهم المحلي بدل Gemini. المهمة: " + result.task;
-    } else {
-      status.textContent =
-        "سمعتك بتقول: " + spokenText +
-        " — راجع الميعاد وحدده يدويًا.";
-    }
+    status.textContent =
+      "⚠️ تم التقاط كلامك، لكن تحديد الموعد تأخر أو فشل. راجع الموعد يدويًا قبل الحفظ.";
   }
-
-  showPage("add");
 };
 
-showPage("add");
-  };
-  recognition.onerror = () => { status.textContent = "حصلت مشكلة في الصوت. اتأكد من إذن الميكروفون وجرب تاني."; };
-  recognition.onend = () => { if (status.textContent === "🎙️ اتكلم دلوقتي...") status.textContent = "انتهى التسجيل."; activeRecognition = null; };
-  try { recognition.start(); } catch(error) { status.textContent = "تعذر بدء التسجيل. جرّب مرة أخرى."; }
-// عرض الأشخاص المسجلين
-function renderFamily() {
+recognition.onerror = () => {
+  status.textContent =
+    "حصلت مشكلة في الصوت. اتأكد من إذن الميكروفون وجرب تاني.";
+};
+
+recognition.onend = () => {
+  if (status.textContent === "🎙️ اتكلم دلوقتي...") {
+    status.textContent = "انتهى التسجيل.";
+  }
+
+  activeRecognition = null;
+};
+
+try {
+  recognition.start();
+} catch (error) {
+  status.textContent = "تعذر بدء التسجيل. جرّب مرة أخرى.";
+}
+}function renderFamily() {
   const list = document.getElementById("familyList");
   if (!list) return;
 
