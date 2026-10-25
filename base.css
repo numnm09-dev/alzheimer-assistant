@@ -1,0 +1,115 @@
+/* ===== BRAND COLORS ===== */
+:root {
+    --brown-dark: #403124;
+    --brown-mid: #BAA382;
+    --bg-cream: #F9F6F0;
+    --white: #FFFFFF;
+    --red: #C0392B;
+    --green-wa: #25D366;
+    --text-muted: #7A6652;
+    --shadow: rgba(64, 49, 36, 0.10);
+    --radius: 14px;
+    --transition: 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== BOOTSTRAP CUSTOM UTILITIES ===== */
+.text-brown-mid {
+    color: var(--brown-mid) !important;
+}
+
+.text-brown-dark {
+    color: var(--brown-dark) !important;
+}
+
+.bg-brown-dark {
+    background-color: var(--brown-dark) !important;
+}
+
+.bg-cream {
+    background-color: var(--bg-cream) !important;
+}
+
+.border-brown-mid {
+    border-color: rgba(186, 163, 130, 0.35) !important;
+}
+
+/* ===== RESET ===== */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+html,
+body {
+    width: 100%;
+    overflow-x: clip;
+}
+
+body {
+    font-family: 'Cairo', sans-serif;
+    background-color: var(--bg-cream);
+    color: var(--brown-dark);
+    overflow-x: hidden;
+}
+
+img {
+    max-width: 100%;
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-cream);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--brown-mid);
+    border-radius: 10px;
+}
+
+/* ===== BUTTONS (Global) ===== */
+.btn-primary {
+    background: var(--brown-dark);
+    color: var(--white);
+    padding: 13px 30px;
+    border-radius: 50px;
+    font-weight: 900;
+    font-size: 15px;
+    border: 2px solid var(--brown-dark);
+    transition: var(--transition);
+    box-shadow: 0 4px 18px rgba(64, 49, 36, 0.28);
+}
+
+.btn-primary:hover {
+    background: var(--brown-mid);
+    border-color: var(--brown-mid);
+    color: var(--brown-dark);
+    transform: translateY(-2px);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--white);
+    padding: 12px 26px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 15px;
+    border: 2px solid rgba(186, 163, 130, 0.55);
+    transition: var(--transition);
+}
+
+.btn-outline:hover {
+    border-color: var(--brown-mid);
+    color: var(--brown-mid);
+    background: rgba(186, 163, 130, 0.08);
+}
