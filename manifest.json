@@ -1,0 +1,21 @@
+{
+  "id": "/",
+  "name": "المساعد الذكي لمرضى الزهايمر",
+  "short_name": "المساعد الذكي",
+  "description": "تطبيق ذكي لتنظيم التذكيرات والمهام اليومية ومساعدة مرضى الزهايمر ومقدمي الرعاية.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#4f46e5",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ]
+}
