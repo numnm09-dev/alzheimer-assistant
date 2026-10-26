@@ -1516,5 +1516,17 @@ renderAll();
 setInterval(checkReminders, 1000);
 document.addEventListener("visibilitychange", () => { if (!document.hidden) checkReminders(); });
 </script>
+ <script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+        .register("/sw.js")
+        .then(() => console.log("تم تجهيز التطبيق للعمل بدون إنترنت"))
+        .catch((error) =>
+          console.error("خطأ في تسجيل Service Worker:", error)
+        );
+    });
+  }
+ </script> 
 </body>
 </html>
